@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head><title>Buy Product</title></head>
+<body>
+  <h2>Selected Product</h2>
+  <p>Category: <span id="cat"></span></p>
+  
+  <h3>Checkout Form</h3>
+  <form id="orderForm">
+    Name: <input name="name"><br>
+    Email: <input name="email"><br>
+    Address: <input name="address"><br>
+    <button type="submit">Add to Cart</button>
+  </form>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const cat = urlParams.get('category');
+    document.getElementById('cat').innerText = cat;
+
+    document.getElementById('orderForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = {
+        category: cat,
+        name: e.target.name.value,
+        email: e.target.email.value,
+        address: e.target.address.value
+      };
+
+      const res = await fetch('http://10.0.2.15:4000/api/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      const result = await res.json();
+      alert('Order Placed: ' + result.orderId);
+    });
+  </script>
+</body>
+</html>

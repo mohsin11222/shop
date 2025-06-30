@@ -1,0 +1,28 @@
+name: Frontend CD
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy frontend on droplet
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          script: |
+            docker pull ${{ secrets.DOCKER_USERNAME }}/shop-frontend:latest
+
+            docker stop frontend || true
+            docker rm frontend || true
+
+            docker run -d \
+              --name frontend \
+              -p 8080:80 \
+              ${{ secrets.DOCKER_USERNAME }}/shop-frontend:latest
